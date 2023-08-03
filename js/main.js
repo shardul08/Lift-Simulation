@@ -99,7 +99,7 @@ window.onload = function() {
         root.innerHTML = "";
     
         let backButton = document.createElement("button");
-        backButton.onclick = function(){window.history.back()};
+        backButton.onclick = function(){window.location.reload()};
         backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
         console.log(backButton.onClick);
         root.appendChild(backButton);
