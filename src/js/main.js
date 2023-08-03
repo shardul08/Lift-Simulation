@@ -8,13 +8,13 @@ window.onload = function() {
 
     function handleSubmit(event) {
         console.log("hello");
+        console.log(screen.availWidth)
         event.preventDefault();
         let num_floor = document.getElementById("num-floor").value;
         let num_lift = document.getElementById("num-lift").value;
         console.log(num_floor, num_lift);
 
         if(!validateInput(num_floor, num_lift)) {
-            alert("Please enter correct values");
             return;
         }
 
@@ -29,9 +29,11 @@ window.onload = function() {
     function validateInput(num_floor, num_lift) {
         let validated = true;
         if(num_floor < 2 || num_floor > 100) {
+            alert("Max floors allowed: 100");
             validated = false;
         }
-        if(num_lift < 1 || num_lift > 5) {
+        if(num_lift < 1 || num_lift > (screen.availWidth/90 - 1)) {
+            alert("Max lifts allowed: " + Math.floor(screen.availWidth/90 - 1));
             validated = false;
         }
 
@@ -47,10 +49,12 @@ window.onload = function() {
             let upButton = document.createElement("button");
             upButton.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
             upButton.setAttribute("name", `UP_${i}`)
+            upButton.setAttribute("class", "lift-btn");
             upButton.onclick = buttonEvent;
             let downButton = document.createElement("button");
             downButton.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
             downButton.setAttribute("name", `DOWN_${i}`);
+            downButton.setAttribute("class", "lift-btn");
             downButton.onclick = buttonEvent;
             let floorName = document.createElement("p");
             floorName.innerText = `Floor ${i}`;
@@ -70,8 +74,8 @@ window.onload = function() {
         for( let i=0; i<num_lift; i++) {
             let lift = document.createElement("div");
             lift.setAttribute("class", "lift");
-            lift.style.left = `${250 + 200*i}px`;
-            lift.style.bottom = "0px";
+            //lift.style.left = `${250 + 200*i}px`;
+            //lift.style.bottom = "0px";
             
             console.log(100 * i,lift);
 
@@ -93,6 +97,13 @@ window.onload = function() {
         }
 
         root.innerHTML = "";
+    
+        let backButton = document.createElement("button");
+        backButton.onclick = function(){window.history.back()};
+        backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
+        console.log(backButton.onClick);
+        root.appendChild(backButton);
+
         root.appendChild(floors);
 
     }
@@ -171,8 +182,6 @@ window.onload = function() {
             console.log(LIFTS);
         }, (Math.abs(floor - currentFloor) * 2000))
     }
-
-/// 0, 101, 203, 305, 407
     
 }
 
