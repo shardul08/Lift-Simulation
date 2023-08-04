@@ -49,6 +49,17 @@ body {
 
 }
 
+.door {
+    z-index: 10;
+    /* background-color: aqua; */
+    height: 100%;
+    width: 1px;
+}
+
+.door > i {
+    font-size: 30px;
+}
+
 button {
     font-size: 20px;
 }

@@ -76,14 +76,32 @@ window.onload = function() {
             lift.setAttribute("class", "lift");
             //lift.style.left = `${250 + 200*i}px`;
             //lift.style.bottom = "0px";
+
+            let door = document.createElement("div");
+            door.setAttribute("class", "door");
+
+            lift.appendChild(door);
+
+            let liftStartAudio = document.createElement("audio");
+            liftStartAudio.src = "/assets/elevator-ding.mp3";
+
+            let liftDoorOpenAudio = document.createElement("audio");
+            liftDoorOpenAudio.src = "/assets/LiftDoorOpening.m4a";
             
+            let liftDoorCloseAudio = document.createElement("audio");
+            liftDoorCloseAudio.src = "/assets/LiftDoorClosing.m4a";
+
             console.log(100 * i,lift);
 
             LIFTS.push({
                 id: i,
                 floor: 0,
                 isMoving: false,
-                element: lift
+                element: lift,
+                door: door,
+                liftStartAudio: liftStartAudio,
+                liftDoorOpenAudio: liftDoorOpenAudio,
+                liftDoorCloseAudio: liftDoorCloseAudio
             });
         }
     }
@@ -132,10 +150,10 @@ window.onload = function() {
             return;
         }
 
-        if(LIFTS[lift].floor == floor) {
-            console.log("Lift already present at the floor: ", floor);
-            return;
-        }
+        // if(LIFTS[lift].floor == floor) {
+        //     console.log("Lift already present at the floor: ", floor);
+        //     return;
+        // }
 
         moveLift(lift, floor, direction, button);
     }
@@ -170,14 +188,30 @@ window.onload = function() {
 
         button.innerHTML = direction == "UP" ? `<i class="fa-solid fa-arrow-up fa-beat" style="color: #bbdf07;"></i>` : `<i class="fa-solid fa-arrow-down fa-beat" style="color: #bbdf07;"></i>`;
 
+        LIFTS[liftId].liftStartAudio.play();
+
         LIFTS[liftId].element.style.transform = `translate(0px, ${((floor * 100)+(floor + floor-1)) * -1}px)`;
         LIFTS[liftId].element.style.transition = `transform ${Math.abs(floor - currentFloor) * 2}s`;
-        LIFTS[liftId].element.innerHTML = floor > currentFloor ? `<i class="fa-solid fa-arrow-up fa-bounce" style="color: #df073d;"></i>` : `<i class="fa-solid fa-arrow-down fa-bounce" style="color: #df073d;"></i>`;
+        //LIFTS[liftId].door.innerHTML = floor > currentFloor ? `<i class="fa-solid fa-arrow-up fa-bounce" style="color: #df073d;"></i>` : `<i class="fa-solid fa-arrow-down fa-bounce" style="color: #df073d;"></i>`;
         console.log(LIFTS);
         setTimeout(() => {
-            LIFTS[liftId].isMoving = false;
+            
             button.innerHTML = direction == "UP" ? `<i class="fa-solid fa-arrow-up"></i>` : `<i class="fa-solid fa-arrow-down"></i>`;
-            LIFTS[liftId].element.innerHTML = "";
+            //LIFTS[liftId].element.innerHTML = "OPEN";
+            LIFTS[liftId].door.style.backgroundColor = "aqua";
+            LIFTS[liftId].door.style.transform = `scaleX(80)`;
+            LIFTS[liftId].door.style.transition = `transform 2.5s`;
+            LIFTS[liftId].liftDoorOpenAudio.play();
+            setTimeout(() => {
+                
+                //LIFTS[liftId].element.innerHTML = "CLOSE";
+                LIFTS[liftId].door.style.transform = `scaleX(0)`;
+                LIFTS[liftId].door.style.transition = `transform 2.5s`;
+                LIFTS[liftId].liftDoorCloseAudio.play();
+            }, 3000);
+            setTimeout(() => {
+                LIFTS[liftId].isMoving = false;
+            }, 5500);
             console.log(`Lift ${liftId} has reached floor ${floor}`);
             console.log(LIFTS);
         }, (Math.abs(floor - currentFloor) * 2000))
