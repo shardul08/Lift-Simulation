@@ -11,6 +11,9 @@ window.onload = function() {
         console.log("hello");
         console.log(screen.availWidth)
         event.preventDefault();
+        FLOORS = [];
+        LIFTS = [];
+        muted = false;
         let num_floor = document.getElementById("num-floor").value;
         let num_lift = document.getElementById("num-lift").value;
         console.log(num_floor, num_lift);
@@ -111,16 +114,7 @@ window.onload = function() {
         }
     }
 
-    function renderFloors() {
-        let root = document.getElementById("root");
-        let floors = document.createElement("div");
-
-        for(let i=FLOORS.length-1; i>=0; i--) {
-            floors.appendChild(FLOORS[i].element);
-        }
-
-        root.innerHTML = "";
-    
+    function createHeader() {
         let backButton = document.createElement("button");
         backButton.onclick = function(){window.location.reload()};
         backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
@@ -131,10 +125,42 @@ window.onload = function() {
         muteButton.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
         let header = document.createElement("div");
         header.setAttribute("class", "header");
+
+        let form = document.createElement("div");
+        form.innerHTML = `
+        <label for="num-floor">Floors</label>
+        <input type="number" id="num-floor" name="num-floor" min="2" value="${FLOORS.length - 1}">
+
+        <label for="num-lift">Lifts</label>
+        <input type="number" id="num-lift" name="num-lift" min="1" value="${LIFTS.length}">
+        `
+        let submitBtn = document.createElement("input");
+        submitBtn.type = "submit";
+        submitBtn.value = "Simulate";
+        submitBtn.onclick = handleSubmit;
+        
+        form.appendChild(submitBtn);
+
         header.appendChild(backButton);
+        header.appendChild(form);
         header.appendChild(muteButton);
+
+        return header;
+    }
+
+    function renderFloors() {
+        let root = document.getElementById("root");
+        let floors = document.createElement("div");
+
+        for(let i=FLOORS.length-1; i>=0; i--) {
+            floors.appendChild(FLOORS[i].element);
+        }
+
+        root.innerHTML = "";
+    
        
-        root.appendChild(header);
+       
+        root.appendChild(createHeader());
         root.appendChild(floors);
 
     }

@@ -26,6 +26,10 @@ body {
     margin: 10px;
 }
 
+input {
+    width: 80px;
+}
+
 .lifts-container {
     position: absolute;
     bottom: 2px;
