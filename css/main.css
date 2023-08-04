@@ -20,6 +20,12 @@ body {
     justify-content: center;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+}
+
 .lifts-container {
     position: absolute;
     bottom: 2px;
@@ -56,10 +62,6 @@ body {
     width: 1px;
 }
 
-.door > i {
-    font-size: 30px;
-}
-
 button {
     font-size: 20px;
 }
@@ -71,9 +73,4 @@ button {
 
 button:hover {
     cursor: pointer;
-}
-
-button > i {
-    height: 15px;
-    width: 15px;
 }

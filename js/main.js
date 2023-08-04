@@ -4,6 +4,7 @@ window.onload = function() {
 
     let FLOORS = [];
     let LIFTS = [];
+    let muted = false;
 
 
     function handleSubmit(event) {
@@ -91,6 +92,10 @@ window.onload = function() {
             let liftDoorCloseAudio = document.createElement("audio");
             liftDoorCloseAudio.src = "/assets/LiftDoorClosing.m4a";
 
+            lift.appendChild(liftStartAudio);
+            lift.appendChild(liftDoorOpenAudio);
+            lift.appendChild(liftDoorCloseAudio);
+
             console.log(100 * i,lift);
 
             LIFTS.push({
@@ -120,8 +125,16 @@ window.onload = function() {
         backButton.onclick = function(){window.location.reload()};
         backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
         console.log(backButton.onClick);
-        root.appendChild(backButton);
-
+        let muteButton = document.createElement("button");
+        muteButton.setAttribute("id", "mute-btn");
+        muteButton.onclick = muteEvent;
+        muteButton.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
+        let header = document.createElement("div");
+        header.setAttribute("class", "header");
+        header.appendChild(backButton);
+        header.appendChild(muteButton);
+       
+        root.appendChild(header);
         root.appendChild(floors);
 
     }
@@ -216,6 +229,14 @@ window.onload = function() {
             console.log(LIFTS);
         }, (Math.abs(floor - currentFloor) * 2000))
     }
-    
+
+    function muteEvent() {
+        muted = ~muted;
+        let muteButton = document.getElementById("mute-btn");
+        muteButton.innerHTML = muted ? `<i class="fa-solid fa-volume-xmark"></i>` : `<i class="fa-solid fa-volume-high"></i>`;
+        document.querySelectorAll("audio").forEach((elem) => {
+            elem.muted = muted;
+        });
+    }
 }
 
