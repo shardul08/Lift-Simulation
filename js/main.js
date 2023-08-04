@@ -13,7 +13,7 @@ window.onload = function() {
         event.preventDefault();
         FLOORS = [];
         LIFTS = [];
-        muted = false;
+
         let num_floor = document.getElementById("num-floor").value;
         let num_lift = document.getElementById("num-lift").value;
         console.log(num_floor, num_lift);
@@ -27,6 +27,9 @@ window.onload = function() {
 
         renderFloors();
         renderLifts();
+
+        muted = ~muted;
+        muteEvent();
         
     }
 
@@ -122,7 +125,7 @@ window.onload = function() {
         let muteButton = document.createElement("button");
         muteButton.setAttribute("id", "mute-btn");
         muteButton.onclick = muteEvent;
-        muteButton.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
+        muteButton.innerHTML = muted ? `<i class="fa-solid fa-volume-xmark"></i>` : `<i class="fa-solid fa-volume-high"></i>`;
         let header = document.createElement("div");
         header.setAttribute("class", "header");
 
