@@ -1,3 +1,13 @@
+const UP_BUTTON = `<i class="fa-solid fa-arrow-up"></i>`;
+const UP_BUTTON_ANIMATED = `<i class="fa-solid fa-arrow-up fa-beat" style="color: #bbdf07;"></i>`;
+const DOWN_BUTTON = `<i class="fa-solid fa-arrow-down"></i>`;
+const DOWN_BUTTON_ANIMATED = `<i class="fa-solid fa-arrow-down fa-beat" style="color: #bbdf07;"></i>`;
+const MUTE_BUTTON =  `<i class="fa-solid fa-volume-high"></i>`;
+const UNMUTE_BUTTON = `<i class="fa-solid fa-volume-xmark"></i>`;
+const BACK_BUTTON = `<i class="fa-solid fa-arrow-left"></i>`;
+
+
+
 window.onload = function() {
     var form = document.getElementById("myForm");
     form.addEventListener('submit', handleSubmit);
@@ -53,20 +63,27 @@ window.onload = function() {
         for(let i=0; i<=num_floor; i++) {
             let floor = document.createElement("div");
             floor.setAttribute("class", "floor");
-            let upButton = document.createElement("button");
-            upButton.innerHTML = `<i class="fa-solid fa-arrow-up"></i>`;
-            upButton.setAttribute("name", `UP_${i}`)
-            upButton.setAttribute("class", "lift-btn");
-            upButton.onclick = buttonEvent;
-            let downButton = document.createElement("button");
-            downButton.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
-            downButton.setAttribute("name", `DOWN_${i}`);
-            downButton.setAttribute("class", "lift-btn");
-            downButton.onclick = buttonEvent;
+            if(i != num_floor) {
+                let upButton = document.createElement("button");
+                upButton.innerHTML = UP_BUTTON;
+                upButton.setAttribute("name", `UP_${i}`)
+                upButton.setAttribute("class", "lift-btn");
+                upButton.onclick = buttonEvent;
+                floor.appendChild(upButton);
+            }
+            
+            if(i != 0) {
+                let downButton = document.createElement("button");
+                downButton.innerHTML = DOWN_BUTTON;
+                downButton.setAttribute("name", `DOWN_${i}`);
+                downButton.setAttribute("class", "lift-btn");
+                downButton.onclick = buttonEvent;
+                floor.appendChild(downButton);
+            }
+            
             let floorName = document.createElement("p");
             floorName.innerText = `Floor ${i}`;
-            floor.appendChild(upButton);
-            floor.appendChild(downButton);
+            
             floor.appendChild(floorName);
             console.log(i, floor);
             FLOORS.push({
@@ -120,12 +137,12 @@ window.onload = function() {
     function createHeader() {
         let backButton = document.createElement("button");
         backButton.onclick = function(){window.location.reload()};
-        backButton.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
+        backButton.innerHTML = BACK_BUTTON;
         console.log(backButton.onClick);
         let muteButton = document.createElement("button");
         muteButton.setAttribute("id", "mute-btn");
         muteButton.onclick = muteEvent;
-        muteButton.innerHTML = muted ? `<i class="fa-solid fa-volume-xmark"></i>` : `<i class="fa-solid fa-volume-high"></i>`;
+        muteButton.innerHTML = muted ? UNMUTE_BUTTON : MUTE_BUTTON;
         let header = document.createElement("div");
         header.setAttribute("class", "header");
 
@@ -228,7 +245,7 @@ window.onload = function() {
         floor = parseInt(floor);
         LIFTS[liftId].floor = floor;
 
-        button.innerHTML = direction == "UP" ? `<i class="fa-solid fa-arrow-up fa-beat" style="color: #bbdf07;"></i>` : `<i class="fa-solid fa-arrow-down fa-beat" style="color: #bbdf07;"></i>`;
+        button.innerHTML = direction == "UP" ? UP_BUTTON_ANIMATED : DOWN_BUTTON_ANIMATED;
 
         LIFTS[liftId].liftStartAudio.play();
 
@@ -238,7 +255,7 @@ window.onload = function() {
         console.log(LIFTS);
         setTimeout(() => {
             
-            button.innerHTML = direction == "UP" ? `<i class="fa-solid fa-arrow-up"></i>` : `<i class="fa-solid fa-arrow-down"></i>`;
+            button.innerHTML = direction == "UP" ? UP_BUTTON : DOWN_BUTTON;
             //LIFTS[liftId].element.innerHTML = "OPEN";
             LIFTS[liftId].door.style.backgroundColor = "aqua";
             LIFTS[liftId].door.style.transform = `scaleX(80)`;
@@ -262,7 +279,7 @@ window.onload = function() {
     function muteEvent() {
         muted = ~muted;
         let muteButton = document.getElementById("mute-btn");
-        muteButton.innerHTML = muted ? `<i class="fa-solid fa-volume-xmark"></i>` : `<i class="fa-solid fa-volume-high"></i>`;
+        muteButton.innerHTML = muted ? UNMUTE_BUTTON : MUTE_BUTTON;
         document.querySelectorAll("audio").forEach((elem) => {
             elem.muted = muted;
         });
