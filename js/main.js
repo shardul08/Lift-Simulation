@@ -15,6 +15,7 @@ window.onload = function() {
     let FLOORS = [];
     let LIFTS = [];
     let muted = false;
+    let QUEUE = [];
 
 
     function handleSubmit(event) {
@@ -63,6 +64,7 @@ window.onload = function() {
         for(let i=0; i<=num_floor; i++) {
             let floor = document.createElement("div");
             floor.setAttribute("class", "floor");
+
             if(i != num_floor) {
                 let upButton = document.createElement("button");
                 upButton.innerHTML = UP_BUTTON;
@@ -80,6 +82,16 @@ window.onload = function() {
                 downButton.onclick = buttonEvent;
                 floor.appendChild(downButton);
             }
+
+            let liftCallAudioUp = document.createElement("audio");
+            liftCallAudioUp.src = "/assets/elevator-ding.mp3";
+
+            let liftCallAudioDown = document.createElement("audio");
+            liftCallAudioDown.src = "/assets/elevator-ding.mp3";
+
+            
+            floor.appendChild(liftCallAudioUp);
+            floor.appendChild(liftCallAudioDown);
             
             let floorName = document.createElement("p");
             floorName.innerText = `Floor ${i}`;
@@ -88,7 +100,9 @@ window.onload = function() {
             console.log(i, floor);
             FLOORS.push({
                 id: i,
-                element: floor
+                element: floor,
+                liftCallAudioUp: liftCallAudioUp,
+                liftCallAudioDown: liftCallAudioDown
             });
             
         }
@@ -98,16 +112,11 @@ window.onload = function() {
         for( let i=0; i<num_lift; i++) {
             let lift = document.createElement("div");
             lift.setAttribute("class", "lift");
-            //lift.style.left = `${250 + 200*i}px`;
-            //lift.style.bottom = "0px";
 
             let door = document.createElement("div");
             door.setAttribute("class", "door");
 
             lift.appendChild(door);
-
-            let liftStartAudio = document.createElement("audio");
-            liftStartAudio.src = "/assets/elevator-ding.mp3";
 
             let liftDoorOpenAudio = document.createElement("audio");
             liftDoorOpenAudio.src = "/assets/LiftDoorOpening.m4a";
@@ -115,7 +124,6 @@ window.onload = function() {
             let liftDoorCloseAudio = document.createElement("audio");
             liftDoorCloseAudio.src = "/assets/LiftDoorClosing.m4a";
 
-            lift.appendChild(liftStartAudio);
             lift.appendChild(liftDoorOpenAudio);
             lift.appendChild(liftDoorCloseAudio);
 
@@ -127,7 +135,6 @@ window.onload = function() {
                 isMoving: false,
                 element: lift,
                 door: door,
-                liftStartAudio: liftStartAudio,
                 liftDoorOpenAudio: liftDoorOpenAudio,
                 liftDoorCloseAudio: liftDoorCloseAudio
             });
@@ -178,8 +185,6 @@ window.onload = function() {
 
         root.innerHTML = "";
     
-       
-       
         root.appendChild(createHeader());
         root.appendChild(floors);
 
@@ -198,27 +203,39 @@ window.onload = function() {
 
     function buttonEvent(event) {
         let button = event.currentTarget;
-        console.log(event);
         let buttonData = button.name.split("_");
         let direction = buttonData[0];
         let floor = buttonData[1];
         console.log(direction, floor);
-        let lift = getLift(floor);
-        if(lift == -1) {
-            console.log("All lifts are busy");
+
+        let alradyInQueue = QUEUE.findIndex((el) => {return (el.floor === floor) && (el.direction === direction)});
+
+        if(alradyInQueue != -1) {
+            console.log("already in queue ", floor);
             return;
+        }   
+
+        direction == "UP" ? FLOORS[floor].liftCallAudioUp.play() : FLOORS[floor].liftCallAudioDown.play();
+
+        button.innerHTML = direction == "UP" ? UP_BUTTON_ANIMATED : DOWN_BUTTON_ANIMATED;
+
+        let lift = getLift(floor);
+
+        if(lift == -1) {
+            QUEUE.push({
+                floor: floor,
+                direction: direction,
+                button: button 
+            });
+        } else {
+            moveLift(lift, floor, direction, button);
         }
-
-        // if(LIFTS[lift].floor == floor) {
-        //     console.log("Lift already present at the floor: ", floor);
-        //     return;
-        // }
-
-        moveLift(lift, floor, direction, button);
+        
     }
 
     function getLift(floor) {
         let availableLifts = LIFTS.filter(lift => lift.isMoving == false);
+        console.log("Av:", availableLifts);
         if(availableLifts.length == 0)
             return -1;
         
@@ -245,35 +262,44 @@ window.onload = function() {
         floor = parseInt(floor);
         LIFTS[liftId].floor = floor;
 
-        button.innerHTML = direction == "UP" ? UP_BUTTON_ANIMATED : DOWN_BUTTON_ANIMATED;
 
-        LIFTS[liftId].liftStartAudio.play();
 
         LIFTS[liftId].element.style.transform = `translate(0px, ${((floor * 100)+(floor + floor-1)) * -1}px)`;
         LIFTS[liftId].element.style.transition = `transform ${Math.abs(floor - currentFloor) * 2}s`;
-        //LIFTS[liftId].door.innerHTML = floor > currentFloor ? `<i class="fa-solid fa-arrow-up fa-bounce" style="color: #df073d;"></i>` : `<i class="fa-solid fa-arrow-down fa-bounce" style="color: #df073d;"></i>`;
         console.log(LIFTS);
         setTimeout(() => {
             
             button.innerHTML = direction == "UP" ? UP_BUTTON : DOWN_BUTTON;
-            //LIFTS[liftId].element.innerHTML = "OPEN";
             LIFTS[liftId].door.style.backgroundColor = "aqua";
             LIFTS[liftId].door.style.transform = `scaleX(80)`;
             LIFTS[liftId].door.style.transition = `transform 2.5s`;
             LIFTS[liftId].liftDoorOpenAudio.play();
             setTimeout(() => {
-                
-                //LIFTS[liftId].element.innerHTML = "CLOSE";
                 LIFTS[liftId].door.style.transform = `scaleX(0)`;
                 LIFTS[liftId].door.style.transition = `transform 2.5s`;
                 LIFTS[liftId].liftDoorCloseAudio.play();
             }, 3000);
             setTimeout(() => {
                 LIFTS[liftId].isMoving = false;
+                completePendinRequests();
             }, 5500);
             console.log(`Lift ${liftId} has reached floor ${floor}`);
             console.log(LIFTS);
         }, (Math.abs(floor - currentFloor) * 2000))
+    }
+
+    function completePendinRequests() {
+        if(QUEUE.length > 0) {
+            let cur_floor = QUEUE[0].floor;
+            let cur_direction = QUEUE[0].direction;
+            let cur_button = QUEUE[0].button;
+            let lift = getLift(cur_floor);
+            console.log("Available lift: ", lift);
+
+            QUEUE.shift();
+
+            moveLift(lift, cur_floor, cur_direction, cur_button);
+        }
     }
 
     function muteEvent() {
@@ -285,4 +311,3 @@ window.onload = function() {
         });
     }
 }
-
