@@ -219,17 +219,17 @@ window.onload = function() {
 
         button.innerHTML = direction == "UP" ? UP_BUTTON_ANIMATED : DOWN_BUTTON_ANIMATED;
 
+        QUEUE.push({
+            floor: floor,
+            direction: direction,
+            button: button 
+        });
+
         let lift = getLift(floor);
 
-        if(lift == -1) {
-            QUEUE.push({
-                floor: floor,
-                direction: direction,
-                button: button 
-            });
-        } else {
-            moveLift(lift, floor, direction, button);
-        }
+        if(lift != -1) {
+            completePendinRequests();
+        } 
         
     }
 
