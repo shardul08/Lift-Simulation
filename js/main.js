@@ -50,8 +50,8 @@ window.onload = function() {
             alert("Max floors allowed: 100");
             validated = false;
         }
-        if(num_lift < 1 || num_lift > (screen.availWidth/90 - 1)) {
-            alert("Max lifts allowed: " + Math.floor(screen.availWidth/90 - 1));
+        if(num_lift < 1 || num_lift > (screen.availWidth/90 - 2)) {
+            alert("Max lifts allowed: " + Math.floor(screen.availWidth/90 - 2));
             validated = false;
         }
 
