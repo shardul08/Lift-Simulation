@@ -35,9 +35,15 @@ input {
     bottom: 2px;
     left: 75px;
     height: 100px;
-    width: 90%;
+    width: 95%;
     display: flex;
     justify-content: space-around;
+}
+
+@media (max-width: 1000px) {
+    .lifts-container {
+        width: 80%;
+    }
 }
 
 .floor {
